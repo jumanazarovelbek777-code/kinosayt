@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>KinoSayt — Frontend Prototype</title>
+  <style>
+    :root{
+      --orange:#ff7f00;
+      --dark: #0f1720;
+      --muted: #9aa4ad;
+      --card-bg: rgba(255,255,255,0.04);
+      --glass: rgba(255,255,255,0.06);
+      --max-width: 1200px;
+      --radius: 12px;
+      font-family: Inter, Arial, sans-serif;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background: linear-gradient(180deg,#071021 0%, #0b1220 60%);
+      color: #fff;
+      -webkit-font-smoothing:antialiased;
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      padding:24px;
+    }
+    .container{
+      width:100%;
+      max-width:var(--max-width);
+    }
+
+    /* Header */
+    header{
+      display:flex;
+      gap:16px;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:20px;
+    }
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .logo{
+      width:48px;height:48px;border-radius:10px;
+      background:linear-gradient(135deg,var(--orange),#ffb366);
+      display:flex;align-items:center;justify-content:center;font-weight:700;color:white;
+      box-shadow:0 6px 18px rgba(0,0,0,0.4);
+    }
+    nav a{color:var(--muted);text-decoration:none;margin-left:14px;font-size:14px}
+    .search{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      background:var(--glass);
+      padding:8px 12px;
+      border-radius:999px;
+      width:360px;
+      max-width:48%;
+    }
+    .search input{
+      background:transparent;border:none;outline:none;color:#fff;font-size:15px;
+      width:100%;
+    }
+
+    /* Hero */
+    .hero{
+      display:flex;
+      gap:20px;
+      align-items:center;
+      margin-bottom:20px;
+      padding:18px;
+      background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:var(--radius);
+    }
+    .hero .title{font-size:22px;font-weight:700}
+    .hero .subtitle{color:var(--muted);font-size:14px;margin-top:6px}
+
+    /* Grid */
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(4,1fr);
+      gap:18px;
+    }
+
+    .card{
+      background:var(--card-bg);
+      border-radius:14px;
+      overflow:hidden;
+      box-shadow: 0 6px 20px rgba(2,6,23,0.6);
+      transition: transform .18s ease, box-shadow .18s ease;
+      cursor:pointer;
+      display:flex;
+      flex-direction:column;
+    }
+    .card:hover{ transform: translateY(-6px); box-shadow: 0 12px 30px rgba(2,6,23,0.7); }
+    .thumb{ width:100%; height:160px; object-fit:cover; display:block; }
+    .card-body{ padding:12px 14px; flex:1; display:flex; flex-direction:column; gap:8px; }
+    .movie-title{ font-size:15px; font-weight:700; line-height:1.2; }
+    .meta{ font-size:13px;color:var(--muted); }
+    .genres{ margin-top:auto; display:flex; gap:8px; flex-wrap:wrap; }
+    .chip{ background: rgba(255,255,255,0.03); padding:6px 8px; border-radius:999px; font-size:12px; color:var(--muted); }
+
+    /* Footer */
+    footer{ margin-top:28px; color:var(--muted); font-size:13px; text-align:center }
+
+    /* Modal (movie detail) */
+    .modal-backdrop{
+      position:fixed; inset:0; background:rgba(2,6,23,0.7); display:none; align-items:center; justify-content:center; z-index:40;
+    }
+    .modal{
+      width:92%;
+      max-width:980px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      border-radius:14px;
+      padding:16px;
+      box-shadow:0 10px 40px rgba(0,0,0,0.6);
+      color:#fff;
+      display:grid;
+      grid-template-columns: 1fr 360px;
+      gap:16px;
+      align-items:start;
+    }
+    .modal .poster{ width:100%; height:360px; object-fit:cover; border-radius:10px; }
+    .modal h2{ margin:0 0 6px 0; }
+    .modal .desc{ color:var(--muted); line-height:1.5; margin-bottom:10px; }
+    .modal .play{ background:var(--orange); padding:12px 18px; border-radius:10px; color:white; border:none; cursor:pointer; font-weight:700; }
+    .modal .right{ display:fle
+	x; flex-direction:column; gap:10px; }
+
+    /* Responsive */
+    @media (max-width:1000px){ .grid{ grid-template-columns: repeat(3,1fr); } .modal{ grid-template-columns: 1fr 300px; } }
+    @media (max-width:760px){ header{flex-direction:column;align-items:flex-start} .search{width:100%} .grid{ grid-template-columns: repeat(2,1fr);} .modal{ grid-template-columns: 1fr; } .modal .poster{ height:240px;} }
+    @media (max-width:420px){ .grid{ grid-template-columns: 1fr; } .search{max-width:100%} }
+
+    /* small helpers */
+    .row{ display:flex; gap:10px; align-items:center; }
+    .muted{ color:var(--muted); font-size:13px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">KS</div>
+        <div>
+          <div style="font-weight:700">KinoSayt</div>
+          <div class="muted" style="font-size:12px">Sizning film arxivingiz</div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:12px; align-items:center;">
+        <div class="search" role="search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.35-4.35" stroke="#fff" stroke-opacity="0.6" stroke-width="2" stroke-linecap="round"/></svg>
+          <input id="searchInput" type="search" placeholder="Film yoki janr qidirish..." />
+        </div>
+        <nav>
+          <a href="#">Bosh sahifa</a>
+          <a href="#">Yangi kinolar</a>
+          <a href="#">Janrlar</a>
+          <a href="#">Kirish</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div>
+        <div class="title">Yaqinda qo‘shilganlar</div>
+        <div class="subtitle">Eng yangi filmlar va seriallar — oson qidiruv, yuqori sifat.</div>
+      </div>
+      <div class="row" style="margin-left:auto">
+        <div class="muted">Filmlar soni: <strong id="count">0</strong></div>
+      </div>
+    </section>
+
+    <main>
+      <div class="grid" id="moviesGrid">
+        <!-- Movie cards injected by JS -->
+      </div>
+    </main>
+
+    <footer>
+      © 2025 KinoSayt • Prototype. Backend uchun API endpointlar kerak bo‘ladi.
+    </footer>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-backdrop" id="modalBackdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div>
+        <img id="modalPoster" class="poster" src="" alt="poster">
+        <div style="margin-top:12px">
+          <button class="play" id="modalPlay">▶️ Tomosha qilish</button>
+        </div>
+      </div>
+      <div class="right">
+        <div style="display:flex; justify-content:space-between; align-items:start">
+          <div>
+            <h2 id="modalTitle">Film nomi</h2>
+            <div class="muted" id="modalMeta">2024 • Drama • 2h 10m</div>
+          </div>
+          <button onclick="closeModal()" style="background:transparent;border:none;color:#fff;font-size:22px;cursor:pointer">✕</button>
+        </div>
+
+        <div class="desc" id="modalDesc">Film haqida qisqacha ma'lumot...</div>
+
+        <div>
+          <strong>Rejissyor:</strong> <span id="modalDirector" class="muted"></span>
+        </div>
+        <div>
+          <strong>Yil:</strong> <span id="modalYear" class="muted"></span>
+        </div>
+
+        <!-- Video player area -->
+        <div id="playerArea" style="margin-top:10px;">
+          <!-- dynamic -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Sample data. Keyingi bosqichda bu ma'lumotlarni backend /api/movies dan olasiz.
+    const movies = [
+      {
+        id: 1,
+        title: "Qamoqdagi Sir",
+        year: 2024,
+        genres: ["Drama", "Kriminal"],
+        thumb: "https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?auto=format&fit=crop&w=800&q=60",
+        poster: "https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?auto=format&fit=crop&w=1200&q=80",
+        runtime: "2h 04m",
+        director: "A. Rasulov",
+        description: "Qamoqdagi Sir - bu qiziqarli kriminal drama. Qahramonimiz o'z haqiqatini isbotlash uchun kurashadi.",
+        videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4"
+      },
+      {id: 2,
+        title: "Oxirgi Plyonka",
+        year: 2023,
+        genres: ["Triller"],
+        thumb: "https://images.unsplash.com/photo-1505685296765-3a2736de412f?auto=format&fit=crop&w=800&q=60",
+        poster: "https://images.unsplash.com/photo-1505685296765-3a2736de412f?auto=format&fit=crop&w=1200&q=80",
+        runtime: "1h 46m",
+        director: "M. Karimov",
+        description: "Rejissyorlikning mukammal namunasi — tomoshabinlarni oxirigacha hayajonda ushlab turadi.",
+        videoUrl: "https://www.w3schools.com/html/movie.mp4"
+      },
+      {
+        id: 3,
+        title: "Sevgi va Shaharda",
+        year: 2022,
+        genres: ["Romantik", "Drama"],
+        thumb: "https://images.unsplash.com/photo-1517604931442-1626f7f0fe8b?auto=format&fit=crop&w=800&q=60",
+        poster: "https://images.unsplash.com/photo-1517604931442-1626f7f0fe8b?auto=format&fit=crop&w=1200&q=80",
+        runtime: "1h 58m",
+        director: "L. Akhmedova",
+        description: "Shahar ortidagi sevgining sarguzashtlari haqida samimiy hikoya.",
+        videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4"
+      },
+      {
+        id: 4,
+        title: "Tungi Iz",
+        year: 2025,
+        genres: ["Detektiv", "Sarguzasht"],
+        thumb: "https://images.unsplash.com/photo-1504639725590-34d0984388bd?auto=format&fit=crop&w=800&q=60",
+        poster: "https://images.unsplash.com/photo-1504639725590-34d0984388bd?auto=format&fit=crop&w=1200&q=80",
+        runtime: "2h 10m",
+        director: "S. Bakhromov",
+        description: "Detektiv yangi sirlarni fosh etadi, keleajakni o'zgartiruvchi kashfiyotlar sodir bo'ladi.",
+        videoUrl: "https://www.w3schools.com/html/movie.mp4"
+      }
+    ];
+
+    const grid = document.getElementById('moviesGrid');
+    const countEl = document.getElementById('count');
+    const searchInput = document.getElementById('searchInput');
+
+    // Render cards
+    function renderMovies(list){
+      grid.innerHTML = '';
+      list.forEach(m => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <img loading="lazy" class="thumb" src="${m.thumb}" alt="${escapeHtml(m.title)}">
+          <div class="card-body">
+            <div class="movie-title">${escapeHtml(m.title)}</div>
+            <div class="meta">${m.year} • ${m.runtime}</div>
+            <div class="genres">${m.genres.map(g => `<span class="chip">${g}</span>`).join('')}</div>
+          </div>
+        `;
+        card.addEventListener('click', ()=> openModal(m.id));
+        grid.appendChild(card);
+      });
+      countEl.textContent = list.length;
+    }
+
+    // Basic search (title or genre)
+    searchInput.addEventListener('input', (e) => {
+      const q = e.target.value.trim().toLowerCase();
+      if(!q) return renderMovies(movies);
+      const filtered = movies.filter(m => {
+        return m.title.toLowerCase().includes(q) || m.genres.join(' ').toLowerCase().includes(q) || (m.director || '').toLowerCase().includes(q);
+      });
+      renderMovies(filtered);
+    });
+
+    // Modal
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    const modalPoster = document.getElementById('modalPoster');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalMeta = document.getElementById('modalMeta');
+    const modalDesc = document.getElementById('modalDesc');
+    const modalDirector = document.getElementById('modalDirector');
+    const modalYear = document.getElementById('modalYear');
+    const playerArea = document.getElementById('playerArea');
+    const modalPlay = document.getElementById('modalPlay');
+
+    let currentMovie = null;
+
+    function openModal(id){
+      const movie = movies.find(x=>x.id===id);
+      if(!movie) return;
+      currentMovie = movie;
+      modalPoster.src = movie.poster;
+      modalTitle.textContent = movie.title;
+      modalMeta.textContent = `${movie.year} • ${movie.genres.join(', ')} • ${movie.runtime}`;
+      modalDesc.textContent = movie.description;
+      modalDirector.textContent = movie.director;
+      modalYear.textContent = movie.year;
+      // create or update player
+      playerArea.innerHTML = `
+        <video id="videoPlayer" width="100%" controls style="border-radius:8px;background:#000">
+          <source src="${movie.videoUrl}" type="video/mp4">
+          Sizning brauzeringiz video formati qo'llab-quvvatlamaydi.
+        </video>
+      `;
+      modalPlay.onclick = () => {
+        document.getElementById('videoPlayer').play();
+      };
+      modalBackdrop.style.display = 'flex';
+      modalBackdrop.setAttribute('aria-hidden','false');
+    }
+
+    function closeModal(){
+      // pause video if any
+      const v = document.getElementById('videoPlayer');
+      if(v && !v.paused) v.pause();
+      modalBackdrop.style.display = 'none';
+      modalBackdrop.setAttribute('aria-hidden','true');
+      playerArea.innerHTML = '';
+    }
+
+    // close on backdrop click
+    modalBackdrop.addEventListener('click', function(e){
+      if(e.target === modalBackdrop) closeModal();
+    });
+    // escape key closes modal
+    window.addEventListener('keydown', (e)=> { if(e.key === 'Escape') closeModal(); });
+
+    // Utility: simple escape to avoid injecting raw text
+    function escapeHtml(text){
+      return String(text)
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'",'&#039;');
+    }
+
+    // Initial render
+    renderMovies(movies);
+
+    /* NEXT STEPS (server integration)
+       --------------------------------
+       - Replace the local `movies` array with a fetch() call:
+         fetch('/api/movies').then(r=>r.json()).then(data=> renderMovies(data));
+       - Implement backend endpoints:
+         GET /api/movies         -> list movies (with pagination)
+         GET /api/movies/:id     -> movie detail (for modal or detail page)
+         POST /api/auth/login    -> auth
+         POST /api/movies/upload -> admin upload (video + metadata)
+       - Use Django/Flask (Python) or Node.js (Express) + PostgreSQL for production.
+       - Host videos on specialized storage (S3, Cloud Storage) or use streaming service.
+    */
+  </script>
+</body>
+</html>
